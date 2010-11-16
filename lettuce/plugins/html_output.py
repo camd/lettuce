@@ -258,6 +258,7 @@ def get_css():
         and "ruby" to "python" but other than that, it's the same.  There is likely a better way to
         include that CSS for our purposes.
     '''
+    
     css = '''
         <style type="text/css">
         /* lettuce.css is generated from lettuce.sass */
