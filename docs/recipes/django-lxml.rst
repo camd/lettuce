@@ -3,10 +3,10 @@
 Web development fun with Lettuce and Django
 ===========================================
 
-Django_ is a awesome web framework, very mature, aims on simplicity
-and the best of all: it's funny to use it.
+Django_ is a awesome web framework, very mature, aims for simplicity
+and the best of all: it's fun to use it.
 
-To make it even funnier, lettuce has builtin support to Django.
+To make it even more fun, lettuce has builtin support to Django.
 
 Getting started
 ~~~~~~~~~~~~~~~
@@ -310,6 +310,10 @@ For example, the command below would run ONLY the tests within the apps `myapp` 
 ::
 
    python manage.py harvest --apps=myapp,foobar
+
+   # or
+
+   python manage.py harvest --a  myapp,foobar
 
 you can also specify it at `settings.py` so that you won't need to type the same command-line parameters all the time:
 

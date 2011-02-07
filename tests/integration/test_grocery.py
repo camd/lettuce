@@ -25,10 +25,11 @@ def test_django_admin_media_serving():
 
     FileSystem.pushd(current_directory, "django", "grocery")
 
-    status, out = commands.getstatusoutput("python manage.py harvest --verbosity=3 ./features/")
+    status, out = commands.getstatusoutput("python manage.py harvest --verbosity=2 ./features/")
     assert_equals(status, 0)
     FileSystem.popd()
 
     lines = out.splitlines()
-    assert_equals(lines[0], u"Preparing to server django's admin site static files...")
-    assert_equals(lines[1], u"Django's builtin server is running at 0.0.0.0:8000")
+
+    assert u"Preparing to server django's admin site static files..." in lines
+    assert u"Django's builtin server is running at 0.0.0.0:8000" in lines

@@ -25,10 +25,17 @@ def escape_if_necessary(what):
 
     return what
 
-def get_stripped_lines(string):
+def get_stripped_lines(string, ignore_lines_starting_with=''):
     string = unicode(string)
     lines = [unicode(l.strip()) for l in string.splitlines()]
-    return filter(lambda x:x, lines)
+    if ignore_lines_starting_with:
+        filter_func = lambda x: x and not x.startswith(ignore_lines_starting_with)
+    else:
+        filter_func = lambda x: x
+
+    lines = filter(filter_func, lines)
+
+    return lines
 
 def split_wisely(string, sep, strip=False):
     string = unicode(string)
@@ -123,3 +130,17 @@ def parse_hashes(lines):
             hashes.append(dict(zip(keys, values)))
 
     return keys, hashes
+
+def parse_multiline(lines):
+    multilines = []
+    in_multiline = False
+    for line in lines:
+        if line == '"""':
+            in_multiline = not in_multiline
+        elif in_multiline:
+            if line.startswith('"'):
+                line = line[1:]
+            if line.endswith('"'):
+                line = line[:-1]
+            multilines.append(line)
+    return u'\n'.join(multilines)
