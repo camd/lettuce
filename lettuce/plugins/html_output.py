@@ -127,6 +127,8 @@ def print_step_ran(step):
         defined_line =u'# %s:%d\n' % (where.file, where.line)
     
     step_class = 'step passed'
+    hash_class = 'passed_hash'
+
     fail_explanation = ''
     # used to possibly inject JavaScript to set the color of the scenario tag, if it fails or isn't defined.
     # this was how cucumber did it.
@@ -134,6 +136,7 @@ def print_step_ran(step):
     
     if not step.defined_at:
         step_class = 'step undefined'
+        hash_class = 'undefined_hash'
         
         '''
             We check if this scenario already has a failed step, in which case we don't 
@@ -146,9 +149,11 @@ def print_step_ran(step):
     
     elif not step.ran:
         step_class = 'step skipped'
+        hash_class = 'skipped_hash'
          
     elif step.failed:
         step_class = 'step failed'
+        hash_class = 'failed_hash'
         
         ''' 
             The scenario header can be green, red or yellow.  If it passes, it's green, obviously.
@@ -172,11 +177,43 @@ def print_step_ran(step):
             <div class="message"><pre>%(message)s</pre></div>
         ''' % {'message': backtrace}
 
+    hash_data_lines = ''
+    if step.hashes:
+        table_rows = ''
+        for line in step.represent_hashes().splitlines():
+            columns = ''
+            for column in line.strip().split("|")[1:-1]:
+                data = '''<td class="%(hash_class)s">%(data)s</td>''' % {"data": cgi.escape(column),
+                                                                         "hash_class": hash_class}
+                columns += data
+            table_rows += ('''<tr>%s</tr>''' % columns)
+            
+                
+        hash_data_lines += '''
+            <table>
+            %(table_rows)s
+            </table>
+        ''' % {'table_rows': table_rows
+               }
+
+
+#            hash_data_lines += '''
+#            <li id='features_test_feature_12' class='%(step_class)s'>
+#                <div class="step_name"><span class="step val">%(hash_data_txt)s</span></div>
+#                <div class="step_file"><span>-</span></div>
+#            </li>
+#            ''' % {'step_class': step_class,
+#                   'hash_data_txt': cgi.escape(line)
+#                   }
+
+
+
     
     step_txt = '''
             <li id='features_test_feature_12' class='%(step_class)s'>
                 <div class="step_name"><span class="step val">%(step_txt)s</span></div>
                 <div class="step_file"><span>%(step_line)s</span></div>
+                %(hash_data_lines)s
                 %(fail_explanation)s
             </li>
             %(scenario_color)s
@@ -185,7 +222,9 @@ def print_step_ran(step):
            'step_line': defined_line,
            'scenario_color': scenario_color,
            'scenario_num': scenario_num,
-           'fail_explanation': fail_explanation}
+           'fail_explanation': fail_explanation,
+           'hash_data_lines': hash_data_lines
+           }
     
     wrt(step_txt)
     
@@ -512,6 +551,52 @@ def get_css():
         .lettuce #summary #totals,td #summary #totals,th #summary #totals {
             font-size: 1.2em;
         }
+        
+        .lettuce table td.failed_hash {
+            border-left: 3px solid #c20000;
+            border-right: 3px solid #c20000;
+            border-bottom: 1px solid #c20000;
+            border-top: 1px solid #c20000;
+            background: #fffbd3;
+            color: #c20000;
+        }
+        
+        .lettuce table td.passed_hash {
+            border-left: 3px solid #65c400;
+            border-right: 3px solid #65c400;
+            border-top: 1px solid #65c400;
+            border-bottom: 1px solid #65c400;
+            background: #dbffb4;
+            color: #3d7700;
+        }
+        
+        .lettuce table td.skipped_hash {
+            border-left: 3px solid aqua;
+            border-right: 3px solid aqua;
+            border-top: 1px solid aqua;
+            border-bottom: 1px solid aqua;
+            background: #e0ffff;
+            color: #001111;
+        }
+        
+        .lettuce table td.pending_hash {
+            border-left: 3px solid #faf834;
+            border-right: 3px solid #faf834;
+            border-top: 1px solid #faf834;
+            border-bottom: 1px solid #faf834;
+            background: #fcfb98;
+            color: #131313;
+        }
+        
+        .lettuce table td.undefined_hash {
+            border-left: 3px solid #faf834;
+            border-right: 3px solid #faf834;
+            border-top: 1px solid #faf834;
+            border-bottom: 1px solid #faf834;
+            background: #fcfb98;
+            color: #131313;
+        }
+        
         
         .python {
             font-size: 12px;
